@@ -95,8 +95,8 @@
                         "stat-value": ["20px", { "lineHeight": "24px", "fontWeight": "900" }]
                     },
                     "animation": {
-                        "ticker": "ticker 28s linear infinite",
-                        "ticker-slow": "ticker 56s linear infinite",
+                        "ticker": "ticker 39.2s linear infinite",
+                        "ticker-slow": "ticker 78.4s linear infinite",
                         "pulse-glow-strong": "pulse-glow-strong 2s infinite"
                     },
                     "keyframes": {
@@ -146,14 +146,14 @@
             100% { width: 100%; }
         }
         .btn-animate-in {
-            animation: fade-in-up 0.5s ease-out 2.5s both;
+            animation: fade-in-up 0.5s ease-out both;
         }
         .loader-animate-out {
-            animation: fade-out 0.3s ease-out 2.5s both;
-            position: absolute;
+            animation: fade-out 0.3s ease-out both;
         }
         .loading-bar-fill {
-            animation: load-progress 2.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+            width: 0%;
+            transition: width 2.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
@@ -228,13 +228,13 @@
 <span class="material-symbols-outlined absolute bottom-10 right-10 text-8xl text-white/5 rotate-12">sports_esports</span>
 </div>
 <!-- Loading Bar -->
-<div class="loader-animate-out z-20 w-48 md:w-64 flex flex-col items-center gap-3">
+<div class="z-20 w-48 md:w-64 flex flex-col items-center gap-3 absolute" id="loading-container">
 <span class="text-xs text-on-surface-variant font-medium">Loading, mohon tunggu</span>
 <div class="w-full h-1.5 bg-surface-variant/50 rounded-full overflow-hidden backdrop-blur-sm border border-white/5 shadow-[0_0_10px_rgba(114,255,112,0.1)]">
-<div class="h-full bg-secondary-fixed loading-bar-fill shadow-[0_0_15px_rgba(114,255,112,0.8)]"></div>
+<div class="h-full bg-secondary-fixed loading-bar-fill shadow-[0_0_15px_rgba(114,255,112,0.8)]" id="loading-bar"></div>
 </div>
 </div>
-<button class="btn-animate-in relative z-20 bg-secondary-fixed text-on-secondary-fixed font-bold text-body-md py-3 px-8 rounded-full hover:bg-secondary transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(114,255,112,0.5)] flex items-center gap-2 animate-pulse-glow-strong">
+<button class="hidden btn-animate-in relative z-20 bg-secondary-fixed text-on-secondary-fixed font-bold text-body-md py-3 px-8 rounded-full hover:bg-secondary transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(114,255,112,0.5)] flex items-center gap-2 animate-pulse-glow-strong" id="main-button">
 <span class="material-symbols-outlined text-2xl">login</span>
             Main Sekarang
         </button>
@@ -249,4 +249,26 @@
 </div>
 </div>
 </main>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const loadingBar = document.getElementById("loading-bar");
+        const loadingContainer = document.getElementById("loading-container");
+        const mainButton = document.getElementById("main-button");
+
+        // Start loading animation
+        setTimeout(() => {
+            loadingBar.style.width = "100%";
+        }, 50);
+
+        // Transition after 2.5s
+        setTimeout(() => {
+            loadingContainer.classList.add("loader-animate-out");
+            
+            setTimeout(() => {
+                loadingContainer.style.display = "none";
+                mainButton.classList.remove("hidden");
+            }, 300); // Wait for fade out animation
+        }, 2500);
+    });
+</script>
 </body></html>
