@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html class="dark" lang="en" style="">
-<head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Prolive Streaming - Watch Live</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Montserrat:wght@700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Montserrat:wght@700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -93,6 +93,22 @@
                         "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
                         "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
                         "stat-value": ["20px", { "lineHeight": "24px", "fontWeight": "900" }]
+                    },
+                    "animation": {
+                        "ticker": "ticker 28s linear infinite",
+                        "ticker-slow": "ticker 56s linear infinite",
+                        "pulse-glow-strong": "pulse-glow-strong 2s infinite"
+                    },
+                    "keyframes": {
+                        "ticker": {
+                            "0%": { transform: "translateX(0)" },
+                            "100%": { transform: "translateX(-50%)" }
+                        },
+                        "pulse-glow-strong": {
+                            "0%": { boxShadow: "0 0 0 0 rgba(114, 255, 112, 0.7)" },
+                            "70%": { boxShadow: "0 0 0 20px rgba(114, 255, 112, 0)" },
+                            "100%": { boxShadow: "0 0 0 0 rgba(114, 255, 112, 0)" }
+                        }
                     }
                 },
             },
@@ -108,87 +124,129 @@
         .live-pulse {
             animation: pulse-glow 3.5s infinite;
         }
+        
+        .glass-card {
+            background: rgba(30, 35, 40, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Loading and Button Reveal Animations */
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fade-out {
+            0% { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        @keyframes load-progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        .btn-animate-in {
+            animation: fade-in-up 0.5s ease-out 2.5s both;
+        }
+        .loader-animate-out {
+            animation: fade-out 0.3s ease-out 2.5s both;
+            position: absolute;
+        }
+        .loading-bar-fill {
+            animation: load-progress 2.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
     </style>
 </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen pt-16">
-<!-- TopNavBar (Shared Component) -->
-<!-- Nav intent is a watch page, which is transactional/focused. Suppressing the TopNavBar to prioritize canvas. -->
-<main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6">
-<!-- Left Column: Video & Stats -->
-<div class="w-full flex flex-col gap-6">
-<!-- Video Player Area -->
-<div class="w-full bg-black rounded-lg overflow-hidden relative shadow-[0_4px_24px_rgba(0,0,0,0.5)] aspect-video border border-surface-variant group flex items-center justify-center">
-
-<!-- Loading Spinner (Tampil saat halaman baru dimuat) -->
-<div id="loadingSpinner" class="absolute z-20 flex items-center justify-center text-white transition-opacity duration-500 opacity-100">
-    <span class="material-symbols-outlined text-8xl animate-spin">progress_activity</span>
+<body class="bg-background text-on-surface font-body-md min-h-screen relative overflow-x-hidden">
+<!-- Background Atmosphere -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+<div class="absolute top-0 left-1/4 w-96 h-96 bg-secondary-fixed/20 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-primary/20 rounded-full blur-[150px]"></div>
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-30"></div>
 </div>
-
-<!-- Play Button Icon (Tersembunyi awalnya) -->
-<button id="playButton" class="absolute z-20 text-white opacity-0 hover:opacity-100 transition-opacity hover:scale-110 transform duration-300 pointer-events-none flex items-center justify-center">
-    <span class="material-symbols-outlined text-8xl" data-icon="play_circle">play_circle</span>
-</button>
-
-<!-- Overlays -->
-<div class="absolute top-4 left-4 flex gap-3 items-center z-10">
-<div class="flex items-center gap-2 bg-background/80 px-3 py-1.5 rounded-full border border-surface-variant backdrop-blur-sm">
-<div class="w-2.5 h-2.5 rounded-full bg-[#00FF41] live-pulse"></div>
-<span class="font-label-caps text-label-caps text-secondary-fixed-dim">LIVE</span>
-</div>
-<div class="bg-primary-container/80 px-3 py-1.5 rounded-full border border-primary/20 backdrop-blur-sm">
-<span class="font-label-caps text-label-caps text-primary">HD 4K</span>
-</div>
-</div>
-
-<!-- Playback Controls (Visible on Hover) -->
-<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex flex-col gap-2">
-<div class="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden cursor-pointer relative">
-<div class="absolute top-0 left-0 h-full bg-[#00FF41] w-[78%]"></div>
-<div class="absolute top-1/2 left-[78%] -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full"></div>
-</div>
-<div class="flex justify-between items-center text-on-surface">
-<div class="flex items-center gap-4">
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="pause">pause</span></button>
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="volume_up">volume_up</span></button>
-<span class="font-label-caps text-label-caps">78:42 / LIVE</span>
-</div>
-<div class="flex items-center gap-4">
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="fullscreen">fullscreen</span></button>
+<!-- Live Ticker -->
+<div class="w-full bg-surface-container-high border-b border-surface-variant py-2 overflow-hidden relative z-10 flex">
+<div class="flex whitespace-nowrap animate-ticker-slow w-max items-center gap-8 text-label-caps text-on-surface-variant font-bold">
+<!-- First Set -->
+<span class="flex items-center gap-2 text-secondary-fixed pl-8"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: MARIBOR 2 - 1 KOPER (78')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: FK TRANSINVEST 0-0 98 RITERIAL (40')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: MARIBOR 2 - 1 KOPER (78')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: FK TRANSINVEST 0-0 98 RITERIAL (40')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: MARIBOR 2 - 1 KOPER (78')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: FK TRANSINVEST 0-0 98 RITERIAL (40')</span>
+<span>•</span>
+<!-- Second Set (Duplicate for smooth loop) -->
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: MARIBOR 2 - 1 KOPER (78')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: FK TRANSINVEST 0-0 98 RITERIAL (40')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: MARIBOR 2 - 1 KOPER (78')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: FK TRANSINVEST 0-0 98 RITERIAL (40')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: MARIBOR 2 - 1 KOPER (78')</span>
+<span>•</span>
+<span class="flex items-center gap-2 text-secondary-fixed"><span class="w-2 h-2 rounded-full bg-secondary-fixed live-pulse"></span> LIVE NOW: FK TRANSINVEST 0-0 98 RITERIAL (40')</span>
+<span class="pr-8">•</span>
 </div>
 </div>
+<main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-10 relative z-10">
+<!-- Hero Section -->
+<!-- Headline -->
+<div>
+<div class="flex justify-center gap-2 mb-2 text-[#FFD700] text-3xl drop-shadow-[0_0_10px_rgba(255,215,0,0.6)]">
+<span>★</span><span>★</span><span>★</span>
+</div>
+<h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-center uppercase tracking-tight max-w-5xl mx-auto bg-gradient-to-r from-white via-primary-fixed to-secondary-fixed text-transparent bg-clip-text drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+        SBbet
+    </h1>
+<h2 class="text-center text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto mt-2 font-bold uppercase tracking-wider">
+        sportsbook terlengkap untuk kemenanganmu
+    </h2>
+</div>
+<div class="w-full bg-surface-container/50 border-y border-white/5 py-4 overflow-hidden relative rounded-xl flex">
+<div class="flex whitespace-nowrap animate-ticker w-max items-center gap-12 text-label-caps text-secondary-fixed font-bold uppercase">
+<!-- First Set -->
+<span class="pl-12">Handicap HDP</span><span class="text-white/20">•</span><span>Over Under OU</span><span class="text-white/20">•</span><span>Odd Even OE</span><span class="text-white/20">•</span><span>Goal TG</span><span class="text-white/20">•</span><span>Correct Skor CS</span><span class="text-white/20">•</span><span>Mix Parlay MP</span><span class="text-white/20">•</span><span>Outright OR</span><span class="text-white/20">•</span>
+<!-- Second Set (Duplicate) -->
+<span>Handicap HDP</span><span class="text-white/20">•</span><span>Over Under OU</span><span class="text-white/20">•</span><span>Odd Even OE</span><span class="text-white/20">•</span><span>Goal TG</span><span class="text-white/20">•</span><span>Correct Skor CS</span><span class="text-white/20">•</span><span>Mix Parlay MP</span><span class="text-white/20">•</span><span class="pr-12">Outright OR</span>
 </div>
 </div>
-<!-- Video Info & Donate Button -->
-<div class="flex flex-col gap-4">
-<h2 class="font-headline-md text-headline-md text-on-surface">Serie A : Lazio vs Genoa</h2>
-<button class="bg-primary text-on-primary font-label-caps text-label-caps py-2 px-4 rounded-lg hover:bg-primary-fixed transition-colors w-fit flex items-center gap-2"><span class="material-symbols-outlined">favorite</span> Watch Other Live</button>
+<!-- Sports Categories Row -->
+<!-- CTA Panel -->
+<div class="w-full bg-surface-container rounded-3xl overflow-hidden relative shadow-[0_10px_40px_rgba(0,0,0,0.6)] border border-surface-variant flex items-center justify-center py-20 md:py-28 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-container/60 to-surface-container">
+<!-- Decorative abstract elements behind CTA -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+<div class="absolute top-1/2 left-1/4 w-[1px] h-32 bg-gradient-to-b from-transparent via-secondary-fixed to-transparent rotate-45 opacity-50"></div>
+<div class="absolute top-1/3 right-1/4 w-[1px] h-48 bg-gradient-to-b from-transparent via-primary to-transparent -rotate-45 opacity-30"></div>
+<span class="material-symbols-outlined absolute top-10 left-10 text-6xl text-white/5 -rotate-12">sports_soccer</span>
+<span class="material-symbols-outlined absolute bottom-10 right-10 text-8xl text-white/5 rotate-12">sports_esports</span>
+</div>
+<!-- Loading Bar -->
+<div class="loader-animate-out z-20 w-48 md:w-64 flex flex-col items-center gap-3">
+<span class="text-xs text-on-surface-variant font-medium">Loading, mohon tunggu</span>
+<div class="w-full h-1.5 bg-surface-variant/50 rounded-full overflow-hidden backdrop-blur-sm border border-white/5 shadow-[0_0_10px_rgba(114,255,112,0.1)]">
+<div class="h-full bg-secondary-fixed loading-bar-fill shadow-[0_0_15px_rgba(114,255,112,0.8)]"></div>
+</div>
+</div>
+<button class="btn-animate-in relative z-20 bg-secondary-fixed text-on-secondary-fixed font-bold text-body-md py-3 px-8 rounded-full hover:bg-secondary transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(114,255,112,0.5)] flex items-center gap-2 animate-pulse-glow-strong">
+<span class="material-symbols-outlined text-2xl">login</span>
+            Main Sekarang
+        </button>
+</div>
+<!-- Leagues Ticker -->
+<div class="w-full bg-surface-container/30 border-y border-white/5 py-3 overflow-hidden relative rounded-lg flex">
+<div class="flex whitespace-nowrap animate-ticker w-max items-center gap-10 text-label-caps text-on-surface-variant font-bold uppercase tracking-wider">
+<!-- First Set -->
+<span class="pl-10">Meistriliiga</span><span class="text-white/10">•</span><span>Virsliga A</span><span class="text-white/10">•</span><span>Lyga Cymru</span><span class="text-white/10">•</span><span>Primera Divisió</span><span class="text-white/10">•</span><span>Ekstraklasa</span><span class="text-white/10">•</span><span>PrvaLiga</span><span class="text-white/10">•</span><span>Niké Liga</span><span class="text-white/10">•</span>
+<!-- Second Set (Duplicate) -->
+<span>Meistriliiga</span><span class="text-white/10">•</span><span>Virsliga A</span><span class="text-white/10">•</span><span>Lyga Cymru</span><span class="text-white/10">•</span><span>Primera Divisió</span><span class="text-white/10">•</span><span>Ekstraklasa</span><span class="text-white/10">•</span><span>PrvaLiga</span><span class="text-white/10">•</span><span class="pr-10">Niké Liga</span>
 </div>
 </div>
 </main>
-
-<!-- Script untuk mengganti Loading ke Tombol Play -->
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        const spinner = document.getElementById('loadingSpinner');
-        const playButton = document.getElementById('playButton');
-
-        // Set waktu tunda 2 detik (2000 ms)
-        setTimeout(() => {
-            // Hilangkan loading spinner
-            spinner.style.opacity = '0';
-            
-            // Tampilkan tombol play setelah animasi fade-out loading selesai (500ms)
-            setTimeout(() => {
-                spinner.style.display = 'none';
-                // Hapus class opacity-0 & pointer-events-none agar tombol bisa diklik
-                playButton.classList.remove('opacity-0', 'pointer-events-none');
-                // Tambahkan opacity-80 agar tombol play terlihat
-                playButton.classList.add('opacity-80');
-            }, 500);
-        }, 2000);
-    });
-</script>
-
-</body>
-</html>
+</body></html>
