@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="dark" lang="en" style="">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Prolive Streaming - Watch Live</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Montserrat:wght@700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e0e3e5",
+                        "primary-fixed-dim": "#b9c7e4",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#b9c7e4",
+                        "inverse-primary": "#515f78",
+                        "on-secondary-fixed-variant": "#00530e",
+                        "on-error": "#690005",
+                        "secondary-container": "#13ff43",
+                        "primary": "#b9c7e4",
+                        "on-surface-variant": "#c5c6cd",
+                        "primary-container": "#0a192f",
+                        "on-secondary": "#003907",
+                        "outline": "#8f9097",
+                        "primary-fixed": "#d6e3ff",
+                        "on-background": "#e0e3e5",
+                        "secondary-fixed-dim": "#00e639",
+                        "on-tertiary": "#20304f",
+                        "tertiary-fixed-dim": "#b6c6ed",
+                        "surface-container-high": "#272a2c",
+                        "on-surface": "#e0e3e5",
+                        "error-container": "#93000a",
+                        "surface": "#101415",
+                        "inverse-on-surface": "#2d3133",
+                        "on-tertiary-fixed-variant": "#374767",
+                        "tertiary": "#b6c6ed",
+                        "background": "#101415",
+                        "secondary-fixed": "#72ff70",
+                        "on-primary": "#233148",
+                        "outline-variant": "#44474d",
+                        "surface-dim": "#101415",
+                        "surface-container-low": "#191c1e",
+                        "surface-container-highest": "#323537",
+                        "on-tertiary-container": "#7282a5",
+                        "on-secondary-container": "#007117",
+                        "on-tertiary-fixed": "#091b39",
+                        "tertiary-container": "#061836",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed": "#002203",
+                        "on-primary-container": "#74829d",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-container-lowest": "#0b0f10",
+                        "on-primary-fixed-variant": "#39475f",
+                        "surface-variant": "#323537",
+                        "surface-bright": "#363a3b",
+                        "on-primary-fixed": "#0d1c32",
+                        "secondary": "#ecffe3",
+                        "surface-container": "#1d2022"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-desktop": "48px",
+                        "container-max": "1440px",
+                        "margin-mobile": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "display-lg": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "stat-value": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "800" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "900" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "stat-value": ["20px", { "lineHeight": "24px", "fontWeight": "900" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Pulse Animation for Live Indicator */
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); }
+        }
+        .live-pulse {
+            animation: pulse-glow 3.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pt-16">
+<!-- TopNavBar (Shared Component) -->
+<!-- Nav intent is a watch page, which is transactional/focused. Suppressing the TopNavBar to prioritize canvas. -->
+<main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6">
+<!-- Left Column: Video & Stats -->
+<div class="w-full flex flex-col gap-6">
+<!-- Video Player Area -->
+<div class="w-full bg-black rounded-lg overflow-hidden relative shadow-[0_4px_24px_rgba(0,0,0,0.5)] aspect-video border border-surface-variant group flex items-center justify-center">
+
+<!-- Loading Spinner (Tampil saat halaman baru dimuat) -->
+<div id="loadingSpinner" class="absolute z-20 flex items-center justify-center text-white transition-opacity duration-500 opacity-100">
+    <span class="material-symbols-outlined text-8xl animate-spin">progress_activity</span>
+</div>
+
+<!-- Play Button Icon (Tersembunyi awalnya) -->
+<button id="playButton" class="absolute z-20 text-white opacity-0 hover:opacity-100 transition-opacity hover:scale-110 transform duration-300 pointer-events-none flex items-center justify-center">
+    <span class="material-symbols-outlined text-8xl" data-icon="play_circle">play_circle</span>
+</button>
+
+<!-- Overlays -->
+<div class="absolute top-4 left-4 flex gap-3 items-center z-10">
+<div class="flex items-center gap-2 bg-background/80 px-3 py-1.5 rounded-full border border-surface-variant backdrop-blur-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-[#00FF41] live-pulse"></div>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim">LIVE</span>
+</div>
+<div class="bg-primary-container/80 px-3 py-1.5 rounded-full border border-primary/20 backdrop-blur-sm">
+<span class="font-label-caps text-label-caps text-primary">HD 4K</span>
+</div>
+</div>
+
+<!-- Playback Controls (Visible on Hover) -->
+<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex flex-col gap-2">
+<div class="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden cursor-pointer relative">
+<div class="absolute top-0 left-0 h-full bg-[#00FF41] w-[78%]"></div>
+<div class="absolute top-1/2 left-[78%] -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface">
+<div class="flex items-center gap-4">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="pause">pause</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="volume_up">volume_up</span></button>
+<span class="font-label-caps text-label-caps">78:42 / LIVE</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="fullscreen">fullscreen</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Video Info & Donate Button -->
+<div class="flex flex-col gap-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Serie A : Lazio vs Genoa</h2>
+<button class="bg-primary text-on-primary font-label-caps text-label-caps py-2 px-4 rounded-lg hover:bg-primary-fixed transition-colors w-fit flex items-center gap-2"><span class="material-symbols-outlined">favorite</span> Watch Other Live</button>
+</div>
+</div>
+</main>
+
+<!-- Script untuk mengganti Loading ke Tombol Play -->
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const spinner = document.getElementById('loadingSpinner');
+        const playButton = document.getElementById('playButton');
+
+        // Set waktu tunda 2 detik (2000 ms)
+        setTimeout(() => {
+            // Hilangkan loading spinner
+            spinner.style.opacity = '0';
+            
+            // Tampilkan tombol play setelah animasi fade-out loading selesai (500ms)
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                // Hapus class opacity-0 & pointer-events-none agar tombol bisa diklik
+                playButton.classList.remove('opacity-0', 'pointer-events-none');
+                // Tambahkan opacity-80 agar tombol play terlihat
+                playButton.classList.add('opacity-80');
+            }, 500);
+        }, 2000);
+    });
+</script>
+
+</body>
+</html>
